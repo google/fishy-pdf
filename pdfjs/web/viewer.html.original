@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Copyright 2012 Mozilla Foundation, modified parts copyright 2023 Google LLC
+Copyright 2012 Mozilla Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -27,137 +27,16 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta name="google" content="notranslate">
     <title>PDF.js viewer</title>
 
-<!-- ADDED / START CUSTOMIZATIONS -->
-<script type="importmap">
-  {
-    "imports": {
-      "vue": "../web-customizations/third_party/vue/vue.esm-browser.js"
-    }
-  }
-</script>
-<script src="../web-customizations/customizations.js" type="module"></script>
-<!-- END CUSTOMIZATIONS -->
-
 <!-- This snippet is used in production (included from viewer.html) -->
 <link rel="resource" type="application/l10n" href="locale/locale.properties">
 <script src="../build/pdf.js"></script>
 
     <link rel="stylesheet" href="viewer.css">
-    <!-- ADDED / START CUSTOMIZATIONS -->
-    <link rel="stylesheet" href="../web-customizations/customizations.css">
-    <!-- END CUSTOMIZATIONS -->
 
   <script src="viewer.js"></script>
   </head>
 
   <body tabindex="1">
-    <!-- ADDED / START CUSTOMIZATIONS -->
-    <div id="securityPanel">
-      <div v-if="!findings">
-        <div class="group intro">
-          <h2>Welcome to the PDF.js-based PDF analyzer</h2>
-          <p>Use the open button in the toolbar of PDF.js to select a file.</p>
-          <p>The file will be loaded (with script execution disabled) and some analysis information will be shown here.</p>
-          <p>Links are currently <em>not</em> defanged, watch your clicks!</p>
-          <p>
-            <strong>Note:</strong> This tool tries to keep you safe by loading the PDF inside the JavaScript sandbox using PDF.js.
-            However, your browser can still be exposed to some data from the PDF (e.g. images, fonts).
-            The analysis focuses on attachments, scripts, links, and annotations.
-            It will <em>not</em> detect e.g. image-based or font-based exploits, suspicious/malicious stream structures, XFA details, some non-JS open actions (including the launch action!), and files embedded via AdditionalStreams (e.g. LibreOffice hybrid docs).
-            It also relies on how PDF.js interprets the file. Since PDF is an extremely complicated format, it is possible to craft files that will be interpreted differently by different software.
-            For low-level analysis, try e.g. <a href="https://blog.didierstevens.com/programs/pdf-tools/">https://blog.didierstevens.com/programs/pdf-tools/</a> or <a href="https://github.com/michelcrypt4d4mus/pdfalyzer">https://github.com/michelcrypt4d4mus/pdfalyzer</a>.
-          </p>
-          <p>Based on <a href="https://github.com/mozilla/pdf.js">Mozilla's PDF.js</a>, licensed under <a href="../LICENSE">Apache 2.0</a>. Uses <a href="https://vuejs.org/">vue.js</a>, licensed under the <a href="../web-customizations/vue-license.txt">MIT license</a>.</p>
-        </div>
-      </div>
-
-      <div v-if="findings">
-        <finding-group name="Document hash" class="hash" v-if="findings.hash">
-          <div class="dochash">{{findings.hash}}</div>
-        </finding-group>
-
-        <finding-group name="Errors" class="errors" v-if="findings.errors?.length">
-          <div v-for="e in findings.errors"><span class="source">{{e.source}}</span> {{e.weirdness}} <button v-if="e.loggable"  @click="console.log(e.source, e.weirdness, e.loggable)">Log to console</button></div>
-        </finding-group>
-
-        <finding-group name="Attachments" class="attachments" v-if="findings.attachments?.length">
-          <em>To download attachments, use the sidebar in PDF.js (you may need to view the corresponding page)</em>
-          <table>
-            <tr v-for="a in findings.attachments">
-              <td class="source">{{a.source}}</td>
-              <!-- TODO download feature -->
-              <td>
-                <div class="filename">{{a.filename}}</div>
-                <div class="filemeta">{{a.data.length}} bytes, {{a.hash}}</div>
-              </td>
-            </tr>
-          </table>
-        </finding-group>
-
-        <finding-group name="Scripts" class="scripts" v-if="findings.scripts?.size">
-          <div class="scriptblock" v-for="[code, sources] in findings.scripts">
-            <div class="source" v-for="[action, moreInfo] in sources.actions">Action "{{action}}" on {{Array.from(moreInfo.keys()).join('/')}}
-              <button @click="sources.showDetails = !sources.showDetails">...</button>
-              <div class="scriptsourcedetails" v-if="sources.showDetails">
-                <div v-for="[srctype, detailList] in moreInfo">
-                  <div v-for="d in detailList">{{srctype}} {{d}}</div>
-                </div>
-              </div>
-            </div>
-            <pre>{{code}}</pre>
-          </div>
-        </finding-group>
-
-        <finding-group name="Suspicious annotations" class="annotations" v-if="findings.suspicious_annotations?.length">
-          <div v-for="e in findings.suspicious_annotations"><span class="source">{{e.source}}</span> {{e.weirdness}} <button @click="console.log(e.source, e.weirdness, e.loggable)">Log to console</button></div>
-        </finding-group>
-
-        <finding-group name="External links" class="links" v-if="findings.links?.length">
-          <table>
-            <tr v-for="l in findings.links">
-              <td class="source">{{l.source}}</td>
-              <td class="linkurl">{{l.url}}</td>
-            </tr>
-          </table>
-        </finding-group>
-
-        <finding-group name="Other information" class="other" v-if="findings.other?.length">
-          <div v-for="e in findings.other"><span class="source">{{e.source}}</span> {{e.weirdness}} <button v-if="e.loggable" @click="console.log(e.source, e.weirdness, e.loggable)">Log to console</button></div>
-        </finding-group>
-
-        <div class="group empty" v-if="findings.errors?.length === 0"> <!-- condition will be false if findings.errors is undefined! -->
-          <h2>No processing errors</h2>
-          You may still want to check the console for PDF.js output.
-        </div>
-        <div class="group empty" v-if="findings.attachments?.length === 0">
-          <h2>No attachments found</h2>
-          (neither on the document itself not in annotations)
-        </div>
-        <div class="group empty" v-if="findings.scripts?.length === 0">
-          <h2>No scripts found</h2>
-        </div>
-        <div class="group empty" v-if="findings.links?.length === 0">
-          <h2>No external links found</h2>
-        </div>
-        <div class="group empty" v-if="findings.suspicious_annotations?.length === 0">
-          <h2>No other unusual/suspicious annotations found</h2>
-        </div>
-
-        <finding-group name="Notes" class="note">
-          <p>
-            This tool only checks for the categories listead above and will NOT detect e.g. image-based or font-based exploits, suspicious/malicious stream structures, XFA details, some non-JS open actions (including the launch action!), and files embedded via AdditionalStreams (e.g. LibreOffice hybrid docs).
-            For low-level analysis, try e.g. <a href="https://blog.didierstevens.com/programs/pdf-tools/">https://blog.didierstevens.com/programs/pdf-tools/</a> or <a href="https://github.com/michelcrypt4d4mus/pdfalyzer">https://github.com/michelcrypt4d4mus/pdfalyzer</a>.
-          </p>
-          <p>This tool also relies on how PDF.js interprets the file. Since PDF is an extremely complicated format, it is possible to craft files that will be interpreted differently by different software.</p>
-          <p>For document metadata/properties, check the top right menu of the PDF.js toolbar.</p>
-          <p>Based on <a href="https://github.com/mozilla/pdf.js">Mozilla's PDF.js</a>, licensed under <a href="../LICENSE">Apache 2.0</a>. Uses <a href="https://vuejs.org/">vue.js</a>, licensed under the <a href="../web-customizations/vue-license.txt">MIT license</a>.</p>
-        </finding-group>
-      </div>
-      <button id="pdfbugButton" onclick="document.location.hash = 'pdfbug=all'; document.location.reload();">Enable PDF.js debugger (fonts, stepper, stats) & reload</button> <!-- todo formatting, only show if not already enabled -->
-    </div>
-    <!-- END CUSTOMIZATIONS -->
-
-
     <div id="outerContainer">
 
       <div id="sidebarContainer">

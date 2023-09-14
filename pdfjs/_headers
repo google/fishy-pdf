@@ -1,0 +1,9 @@
+# CSP config
+#   The main purpose of the policy is not to prevent XSS, it is to prevent exfil and loading of exploits from the web.
+#   data: is required for thumbnails
+#   unsafe-eval is required for Vue and some performance optimizations in pdf.js.
+#     If we properly precompile Vue templates and set isEvalSupported = false, unsafe-eval can likely be removed.
+#   `navigate-to 'self';` removed because the directive was never standardized and removed from browsers (as of September 2023).
+
+/*
+  Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data:; worker-src 'self'; object-src 'none'; form-action 'self';
