@@ -21,6 +21,12 @@ The `third_party/pdfjs/` directory is intended to serve as the webroot.
 
 `pdfjs-server.py` can be used to serve the webroot locally with CSP headers.
 
+To make it easier to pull in new versions of pdf.js, changes should be kept
+separate as far as possible (i.e. add new files in `web-customizations` or above
+the `third_party directory` unless they need to be elsewhere for technical
+reasons, try to avoid making changes to files from the pdf.js distribution
+bundle with the exception of `viewer.html`).
+
 ## Disclaimer
 
 This is not an officially supported Google product.
