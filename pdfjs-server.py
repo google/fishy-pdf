@@ -17,7 +17,7 @@
 import os
 from http.server import HTTPServer, SimpleHTTPRequestHandler, test
 
-WEBROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'pdfjs')
+WEBROOT = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'third_party/pdfjs')
 
 def get_csp():
     with open(os.path.join(WEBROOT, '_headers')) as f:
