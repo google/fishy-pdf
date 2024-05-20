@@ -230,6 +230,7 @@ document.addEventListener("webviewerloaded", async () => {
 
   window.PDFViewerApplicationOptions.setAll({
     "enableScripting": false, // parametrize?
+    "isEvalSupported": false,
     "disableTelemetry": true,
     "disablePreferences": true,
     "disableHistory": true,

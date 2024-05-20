@@ -27,6 +27,12 @@ the `third_party directory` unless they need to be elsewhere for technical
 reasons, try to avoid making changes to files from the pdf.js distribution
 bundle with the exception of `viewer.html`).
 
+## Vulnerabilities
+
+This application was affected by [CVE-2024-4367](https://codeanlabs.com/blog/research/cve-2024-4367-arbitrary-js-execution-in-pdf-js/).
+The vulnerability allowed PDFs to execute JavaScript under the origin where the viewer was hosted, subject to the Content Security Policy.
+Since the viewer is meant to be hosted on an isolated origin, the impact was limited.
+
 ## Disclaimer
 
 This is not an officially supported Google product.
