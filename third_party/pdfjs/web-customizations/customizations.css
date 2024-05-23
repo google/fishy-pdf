@@ -38,7 +38,7 @@ limitations under the License.
   cursor: default;
 }
 
-#securityPanel #pdfbugButton {
+#securityPanel button {
   margin: 20px;
   padding: 10px;
   font-size: 130%;

@@ -56,7 +56,8 @@ See https://github.com/adobe-type-tools/cmap-resources
       <div v-if="!findings">
         <div class="group intro">
           <h2>Welcome to the PDF.js-based PDF analyzer</h2>
-          <p>Use the open button in the toolbar of PDF.js to select a file.</p>
+          <div><button onclick="PDFViewerApplication.eventBus.dispatch('openfile')">Select file</button></div>
+          <p>(You can also use the open button in the toolbar of PDF.js to select a file.)</p>
           <p>The file will be loaded (with script execution disabled) and some analysis information will be shown here.</p>
           <p>Links are currently <em>not</em> defanged, watch your clicks!</p>
           <p>
